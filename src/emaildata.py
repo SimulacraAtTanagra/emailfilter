@@ -15,6 +15,7 @@ Output is Json file with dict, key is group name, value is list of names
 
 from admin import newest, colclean, rehead ,read_json,to_records,write_json,trydict,fileverify
 import pandas as pd
+import ast
 
 def subsetter(df,crit_field,criteria):
     try:
@@ -25,7 +26,9 @@ def subsetter(df,crit_field,criteria):
         newdf=df[df[crit_field]==criteria]
         df=df[~df['empl_id'].isin(list(newdf.empl_id.unique()))]
         return(df,newdf)
-       
+def update_crit():
+    critloc=ast.literal_eval(open('y://program data//critloc.txt','r').read())
+    write_json(critloc,'y://program data//emaildata_criteria_list')      
 
 
 
@@ -34,7 +37,13 @@ def refresh_lists():
     outfile='Y://Program Data//emaildata.json'
     #first read in df by opening most recent  CJR
     df=colclean(rehead(pd.read_excel(newest(infolder,'FULL_FILE')),2))
-    df.person_nm=df.person_nm.replace("Audre Jackson","Annie Jackson")
+    
+    #ananoymizes function and makes reliant on local data sources
+    #this changes out government names for commonly used name (on email acct)
+    swap_dict=read_json('y://program data//swapdict.json')
+    for k,v in swap_dict.items():
+        df.person_nm=df.person_nm.replace(k,v)
+    
     #pull in current department data for depthead fields
     deptfile='Y://Current Data//Lookup Tables//departments_file.xlsx'
     df2=colclean(pd.read_excel(deptfile))
@@ -61,20 +70,6 @@ def refresh_lists():
     reports=list(df[df.reports_to_emplid.isnull()==False].reports_to_emplid.unique())
     df.loc[(df['empl_id'].isin(reports)) & (df['hr_status'] == 'Active'),'supervisor'] = 'supervisor'
     
-    
-    critloc=[('person_nm',"Sabrina Johnson Chandler",'From Sabrina Johnson Chandler'),
-    ('reports_to_emplid','23134914','From HRIS Team'),
-    ('dept_descr_job','Human Resources','From other HR'),
-    ('dept_descr_job','Computer Svcs','From IT'),
-    ('dept_descr_job','Budget','From Budget'),
-    ('dept_descr_job','Office of Planning and Budget','From Budget'),
-    ('union_job_cd','ECP','From Vice President'),
-    ('dept_head','chair','From Department Head'),
-    ('supervisor','supervisor','From Supervisor'),
-    ('support','support','From Department Secretary'),
-    ('labor_job_ld','College Assistant',"From College Assistants"),
-    ('empl_cls_ld',"Tenured","From Faculty")]
-    write_json(critloc,'y://program data//emaildata_criteria_list')
     #open current json document or prepare to create
     if fileverify(outfile):
         maindict=read_json(outfile)
