@@ -13,6 +13,8 @@ Input is Current Job Report from CUNYfirst as excel file.
 Output is Json file with dict, key is group name, value is list of names
 """
 
+#TODO consolidate labels to single column to capture only top level label
+
 from admin import newest, colclean, rehead ,read_json,to_records,write_json,trydict,fileverify
 import pandas as pd
 import ast

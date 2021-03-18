@@ -12,6 +12,9 @@ from admin import read_json
 from emaildata import refresh_lists
 outlook = win32com.Dispatch("Outlook.Application").GetNamespace("MAPI")
 
+#TODO set up replacement function (dictionary call) for off-names (Greg, Linda)
+
+
 # setup range for outlook to search emails (so we don't go through the entire inbox)
 #lastWeekDateTime = dt.datetime.now() - dt.timedelta(days = 29)
 #lastWeekDateTime = lastWeekDateTime.strftime('%m/%d/%Y %H:%M %p')  #<-- This format compatible with "Restrict"
