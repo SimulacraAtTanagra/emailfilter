@@ -13,7 +13,8 @@ from emaildata import refresh_lists
 outlook = win32com.Dispatch("Outlook.Application").GetNamespace("MAPI")
 
 #TODO set up replacement function (dictionary call) for off-names (Greg, Linda)
-
+#TODO remove explicit references
+#TODO expand what you can do with each of these tools. (Similar to what we did with pandas)
 
 # setup range for outlook to search emails (so we don't go through the entire inbox)
 #lastWeekDateTime = dt.datetime.now() - dt.timedelta(days = 29)
