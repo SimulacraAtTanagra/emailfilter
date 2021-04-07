@@ -13,8 +13,6 @@ Input is Current Job Report from CUNYfirst as excel file.
 Output is Json file with dict, key is group name, value is list of names
 """
 
-#TODO consolidate labels to single column to capture only top level label
-
 from admin import newest, colclean, rehead ,read_json,to_records,write_json,trydict,fileverify
 import pandas as pd
 import ast
@@ -29,25 +27,25 @@ def subsetter(df,crit_field,criteria):
         df=df[~df['empl_id'].isin(list(newdf.empl_id.unique()))]
         return(df,newdf)
 def update_crit():
-    critloc=ast.literal_eval(open('y://program data//critloc.txt','r').read())
-    write_json(critloc,'y://program data//emaildata_criteria_list')      
+    critloc=ast.literal_eval(open('y://reports//program data//critloc.txt','r').read())
+    write_json(critloc,'y://reports//program data//emaildata_criteria_list')      
 
 
 
 def refresh_lists():
-    infolder='s://downloads'
-    outfile='Y://Program Data//emaildata.json'
+    infolder='y://reports//archives//2021'
+    outfile='Y://reports//Program Data//emaildata.json'
     #first read in df by opening most recent  CJR
     df=colclean(rehead(pd.read_excel(newest(infolder,'FULL_FILE')),2))
     
     #ananoymizes function and makes reliant on local data sources
     #this changes out government names for commonly used name (on email acct)
-    swap_dict=read_json('y://program data//swapdict.json')
+    swap_dict=read_json('y://reports//program data//swapdict.json')
     for k,v in swap_dict.items():
         df.person_nm=df.person_nm.replace(k,v)
     
     #pull in current department data for depthead fields
-    deptfile='Y://Current Data//Lookup Tables//departments_file.xlsx'
+    deptfile='Y://reports//Lookup Tables//departments_file.xlsx'
     df2=colclean(pd.read_excel(deptfile))
     chairs=list(df2.chairperson.unique())
     support=list(df2[df2.support_staff.isnull()==False].support_staff.unique())
@@ -80,7 +78,7 @@ def refresh_lists():
     writedict={}
     #have a standing list of criteria fields and criteria, then iterate 
     #have 3 part tuple with crit_field, criteria, and label
-    critloc='Y://Program Data//emaildata_criteria_list.json'
+    critloc='Y://reports//Program Data//emaildata_criteria_list.json'
     critlist=read_json(critloc)
     for crit_field,criteria,label in critlist:
         df,newdf=subsetter(df,crit_field,criteria)
